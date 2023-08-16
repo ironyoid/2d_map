@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13.0)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-set(SOURCES src/main.cpp src/engine/physics/physics.cpp deps/src/glad.c)
+set(SOURCES src/main.cpp)
 set(CMAKE_GENERATOR "Unix Makefiles")
 project (2d_engine)
 set(SDL2_DIR C:/SDL2-devel-2.28.2-mingw/SDL2-2.28.2/cmake/)
@@ -12,4 +12,4 @@ target_link_libraries(2d_engine ${SDL2_LIBRARIES})
 
 target_include_directories(2d_engine PUBLIC ${PROJECT_SOURCE_DIR}/deps/include)
 target_include_directories(2d_engine PUBLIC ${PROJECT_SOURCE_DIR}/src/engine)
-target_compile_options(2d_engine PRIVATE -g -mconsole)
+target_compile_options(2d_engine PRIVATE -g)
