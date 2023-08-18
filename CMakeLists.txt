@@ -5,7 +5,7 @@ project (2d_engine)
 set(CMAKE_GENERATOR "Unix Makefiles")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(SOURCES src/main.cpp src/quadtree.cpp)
+set(SOURCES src/main.cpp src/quadtree.cpp src/grid.cpp)
 
 
 include_directories(${SDL2_INCLUDE_DIRS})

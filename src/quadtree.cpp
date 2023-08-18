@@ -66,37 +66,6 @@ void QuadTree::Split(void) {
     top_right_tree = new QuadTree(left_top2, right_bottom2);
     bottom_left_tree = new QuadTree(left_top3, right_bottom3);
     bottom_right_tree = new QuadTree(left_top4, right_bottom4);
-
-    cout << point_to_str(left_top1) << " " << point_to_str(right_bottom1) << endl;
-    cout << point_to_str(left_top2) << " " << point_to_str(right_bottom2) << endl;
-    cout << point_to_str(left_top3) << " " << point_to_str(right_bottom3) << endl;
-    cout << point_to_str(left_top4) << " " << point_to_str(right_bottom4) << endl;
-    cout << endl;
-
-    /*     top_left_tree = new QuadTree(left_top, size / 2);
-    top_right_tree = new QuadTree(Point2D{ left_top.x + size / 2, left_top.y }, size / 2);
-    bottom_left_tree = new QuadTree(Point2D{ left_top.x, left_top.y + size / 2 }, size / 2);
-    bottom_right_tree = new QuadTree(Point2D{ left_top.x + size / 2, left_top.y + size / 2 }, size / 2); */
-
-    /*     Point2D left_top1 = left_top;
-    Point2D left_top2 = Point2D{ right_bottom.x / 2, left_top.y };
-    Point2D left_top3 = Point2D{ left_top.x, right_bottom.y / 2 };
-    Point2D left_top4 = Point2D{ right_bottom.x / 2, right_bottom.y / 2 };
-
-    Point2D right_bottom1 = right_bottom / 2;
-    Point2D right_bottom2 = Point2D{ right_bottom.x, right_bottom.y / 2 };
-    Point2D right_bottom3 = Point2D{ right_bottom.x / 2, right_bottom.y };
-    Point2D right_bottom4 = Point2D{ right_bottom.x, right_bottom.y };
-
-    cout << point_to_str(left_top1) << " " << point_to_str(right_bottom1) << endl;
-    cout << point_to_str(left_top2) << " " << point_to_str(right_bottom2) << endl;
-    cout << point_to_str(left_top3) << " " << point_to_str(right_bottom3) << endl;
-    cout << point_to_str(left_top4) << " " << point_to_str(right_bottom4) << endl;
-    cout << endl;
-    top_left_tree = new QuadTree(left_top1, right_bottom1);
-    top_right_tree = new QuadTree(left_top2, right_bottom2);
-    bottom_left_tree = new QuadTree(left_top3, right_bottom3);
-    bottom_right_tree = new QuadTree(left_top4, right_bottom4); */
 }
 
 uint32_t QuadTree::GridSize(void) {
@@ -105,13 +74,10 @@ uint32_t QuadTree::GridSize(void) {
 }
 
 void CreateQuadTree (QuadTree *root, uint32_t grid_size) {
-    /* cout << "left_top = (" << root->left_top.x << ", " << root->left_top.y << ") "
-         << "right_bottom = (" << root->right_bottom.x << ", " << root->right_bottom.y << ")" << endl; */
     if(root->GridSize() <= grid_size) {
         return;
     }
     root->Split();
-    Sleep(1000);
     CreateQuadTree(root->top_left_tree, grid_size);
     CreateQuadTree(root->top_right_tree, grid_size);
     CreateQuadTree(root->bottom_left_tree, grid_size);
