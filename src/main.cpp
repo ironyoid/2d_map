@@ -9,8 +9,10 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-#define WINDOW_WIDTH  (1000U)
-#define WINDOW_HEIGHT (1000U)
+#define WINDOW_WIDTH   (800U)
+#define WINDOW_HEIGHT  (800U)
+#define GRID_STEP      (20U)
+#define GRID_THRESHOLD (20U)
 
 typedef enum {
     eDrawSate_Idle = 0,
@@ -33,10 +35,10 @@ class Draw
     static const int CTRL_KEY = 343;
     static const int Z_KEY = 90;
 
-    static void Init (uint32_t _threshold) {
+    static void Init (uint32_t width, uint32_t height, uint32_t step, uint32_t _threshold) {
         draw_state = eDrawSate_Start;
         threshold = _threshold;
-        grid = new Grid(50, WINDOW_WIDTH, WINDOW_HEIGHT, 1.0);
+        grid = new Grid(step, width, height);
         start_point.x = 10;
     }
 
@@ -49,7 +51,7 @@ class Draw
         if(point) {
             p8g::point(point.value().x, point.value().y);
         }
-        p8g::strokeWeight(3.0);
+        p8g::strokeWeight(2.5);
         p8g::stroke(0, 0, 0, 255);
         for(auto n : lines) {
             p8g::line(n.a.x, n.a.y, n.b.x, n.b.y);
@@ -112,6 +114,7 @@ class Draw
             draw_state = eDrawSate_Idle;
         }
     };
+
     static void MouseMoved (){};
     static void MousePressed (){};
     static void MouseWheel (float delta){};
@@ -126,7 +129,7 @@ vector<Line2D> Draw::lines;
 bool Draw::is_ctrl_pressed;
 
 int main () {
-    Draw::Init(20);
+    Draw::Init(WINDOW_WIDTH, WINDOW_HEIGHT, GRID_STEP, GRID_THRESHOLD);
     Draw test{};
     RunArgs run_args{ WINDOW_WIDTH, WINDOW_HEIGHT, "2d_engine", false };
     p8g::_run(run_args,

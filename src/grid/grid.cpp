@@ -3,22 +3,32 @@
 #include "p8g.hpp"
 
 using namespace p8g;
-using std::cout;
-using std::endl;
 
-Grid::Grid(uint32_t step, uint32_t size_x, uint32_t size_y, float thickness) :
-    step(step),
-    size_x(size_x),
-    size_y(size_y),
-    thickness(thickness){};
+Grid::Grid(uint32_t step, uint32_t size_x, uint32_t size_y) : step(step), size_x(size_x), size_y(size_y){};
 
 void Grid::DrawGrid() {
-    p8g::strokeWeight(thickness);
+    uint32_t thick_counter = 0;
+    p8g::stroke(0, 0, 0, 100);
     for(uint32_t x = 0; x < size_x; x += step) {
+        if(10 == thick_counter) {
+            thick_counter = 0;
+            p8g::strokeWeight(2.0);
+        } else {
+            p8g::strokeWeight(1.0);
+        }
         p8g::line(x, 0, x, size_y);
+        thick_counter++;
     }
+    thick_counter = 0;
     for(uint32_t y = 0; y < size_y; y += step) {
+        if(10 == thick_counter) {
+            thick_counter = 0;
+            p8g::strokeWeight(2.0);
+        } else {
+            p8g::strokeWeight(1.0);
+        }
         p8g::line(0, y, size_x, y);
+        thick_counter++;
     }
 };
 
