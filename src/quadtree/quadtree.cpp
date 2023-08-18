@@ -1,6 +1,5 @@
 #include "quadtree.hpp"
 #include <string>
-#include <windows.h>
 using std::cout;
 using std::endl;
 using std::string;

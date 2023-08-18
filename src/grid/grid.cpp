@@ -29,7 +29,7 @@ Point2DDistance Grid::Distance(Point2D point, uint32_t mouse_x, uint32_t mouse_y
     return ret;
 };
 
-Point2D Grid::FindPoint(uint32_t mouse_x, uint32_t mouse_y) {
+std::optional<Point2D> Grid::FindPoint(uint32_t mouse_x, uint32_t mouse_y, uint32_t threshold) {
     Point2DDistance ret{ 0, 0, step };
 
     Point2D left_top{ (mouse_x / step) * step, (mouse_y / step) * step };
@@ -49,6 +49,10 @@ Point2D Grid::FindPoint(uint32_t mouse_x, uint32_t mouse_y) {
             ret.distance = n.distance;
         }
     }
-    cout << endl;
-    return ret.a;
+
+    if(ret.distance < threshold) {
+        return Point2D{ ret.a.x, ret.a.y };
+    } else {
+        return {};
+    }
 };
