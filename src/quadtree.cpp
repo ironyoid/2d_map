@@ -42,9 +42,9 @@ QuadTree::QuadTree() {
     right_bottom = Point2D{ 0, 0 };
 };
 
-QuadTree::QuadTree(Point2D left_top, Point2D right_bottom) {
+QuadTree::QuadTree(Point2D left_top, Point2D size) {
     this->left_top = left_top;
-    this->right_bottom = right_bottom;
+    this->size = size;
     top_left_tree = nullptr;
     top_right_tree = nullptr;
     bottom_left_tree = nullptr;
@@ -53,6 +53,32 @@ QuadTree::QuadTree(Point2D left_top, Point2D right_bottom) {
 
 void QuadTree::Split(void) {
     Point2D left_top1 = left_top;
+    Point2D left_top2 = Point2D{ left_top.x + size.x / 2, left_top.y };
+    Point2D left_top3 = Point2D{ left_top.x, left_top.y + size.y / 2 };
+    Point2D left_top4 = Point2D{ left_top.x + size.x / 2, left_top.y + size.y / 2 };
+
+    Point2D right_bottom1 = size / 2;
+    Point2D right_bottom2 = size / 2;
+    Point2D right_bottom3 = size / 2;
+    Point2D right_bottom4 = size / 2;
+
+    top_left_tree = new QuadTree(left_top1, right_bottom1);
+    top_right_tree = new QuadTree(left_top2, right_bottom2);
+    bottom_left_tree = new QuadTree(left_top3, right_bottom3);
+    bottom_right_tree = new QuadTree(left_top4, right_bottom4);
+
+    cout << point_to_str(left_top1) << " " << point_to_str(right_bottom1) << endl;
+    cout << point_to_str(left_top2) << " " << point_to_str(right_bottom2) << endl;
+    cout << point_to_str(left_top3) << " " << point_to_str(right_bottom3) << endl;
+    cout << point_to_str(left_top4) << " " << point_to_str(right_bottom4) << endl;
+    cout << endl;
+
+    /*     top_left_tree = new QuadTree(left_top, size / 2);
+    top_right_tree = new QuadTree(Point2D{ left_top.x + size / 2, left_top.y }, size / 2);
+    bottom_left_tree = new QuadTree(Point2D{ left_top.x, left_top.y + size / 2 }, size / 2);
+    bottom_right_tree = new QuadTree(Point2D{ left_top.x + size / 2, left_top.y + size / 2 }, size / 2); */
+
+    /*     Point2D left_top1 = left_top;
     Point2D left_top2 = Point2D{ right_bottom.x / 2, left_top.y };
     Point2D left_top3 = Point2D{ left_top.x, right_bottom.y / 2 };
     Point2D left_top4 = Point2D{ right_bottom.x / 2, right_bottom.y / 2 };
@@ -70,12 +96,12 @@ void QuadTree::Split(void) {
     top_left_tree = new QuadTree(left_top1, right_bottom1);
     top_right_tree = new QuadTree(left_top2, right_bottom2);
     bottom_left_tree = new QuadTree(left_top3, right_bottom3);
-    bottom_right_tree = new QuadTree(left_top4, right_bottom4);
+    bottom_right_tree = new QuadTree(left_top4, right_bottom4); */
 }
 
 uint32_t QuadTree::GridSize(void) {
-    cout << "Grid size: " << right_bottom.x - left_top.x << endl;
-    return (right_bottom.x - left_top.x);
+    cout << "Grid size: " << size.x << endl;
+    return (size.x);
 }
 
 void CreateQuadTree (QuadTree *root, uint32_t grid_size) {

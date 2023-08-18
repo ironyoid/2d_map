@@ -24,6 +24,7 @@ class QuadTree
 {
    public:
     Point2D left_top;
+    Point2D size;
     Point2D right_bottom;
     QuadTree *top_left_tree;
     QuadTree *top_right_tree;
