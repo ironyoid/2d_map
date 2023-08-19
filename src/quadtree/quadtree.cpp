@@ -26,6 +26,13 @@ Point2D Point2D::operator/(const uint32_t other) {
     return tmp;
 }
 
+Point2D Point2D::operator-(const Point2D &other) {
+    Point2D tmp;
+    tmp.x = x - other.x;
+    tmp.y = y - other.y;
+    return tmp;
+}
+
 Point2D &Point2D::operator/=(const uint32_t other) {
     x /= other;
     y /= other;

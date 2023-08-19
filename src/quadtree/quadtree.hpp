@@ -4,19 +4,20 @@
 #include <stdint.h>
 
 struct Point2D {
-    uint32_t x;
-    uint32_t y;
+    int32_t x;
+    int32_t y;
     bool operator==(const Point2D &other) const;
     Point2D &operator=(const Point2D &other);
     Point2D &operator/=(const Point2D &other);
     Point2D &operator/=(const uint32_t other);
     Point2D operator/(const uint32_t other);
+    Point2D operator-(const Point2D &other);
 };
 
 struct Line2D {
     Point2D a;
     Point2D b;
-
+    float thickness;
     bool operator==(const Line2D &other) const;
 };
 
