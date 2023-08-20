@@ -9,9 +9,11 @@ struct Point2D {
     bool operator==(const Point2D &other) const;
     Point2D &operator=(const Point2D &other);
     Point2D &operator/=(const Point2D &other);
-    Point2D &operator/=(const uint32_t other);
-    Point2D operator/(const uint32_t other);
+    Point2D &operator/=(const float other);
+    Point2D operator/(const float other);
     Point2D operator-(const Point2D &other);
+    Point2D operator+(const Point2D &other);
+    void Print (void);
 };
 
 struct Line2D {

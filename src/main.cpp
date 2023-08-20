@@ -35,6 +35,8 @@ class Draw
     static float scale;
     static bool is_right_button_pressed;
     static bool is_ctrl_pressed;
+    constexpr static float LINE_THICKNESS = 4.0;
+
     static const int LEFT_BUTTON = 0;
     static const int RIGHT_BUTTON = 1;
     static const int CTRL_KEY = 343;
@@ -44,6 +46,8 @@ class Draw
     static const int UP_ARROW_KEY = 265;
     static const int DOWN_ARROW_KEY = 264;
     static const int P_KEY = 80;
+    static const int PLUS_KEY = 61;
+    static const int MINUS_KEY = 45;
 
     static void Init (uint32_t width,
                       uint32_t height,
@@ -51,11 +55,11 @@ class Draw
                       uint32_t window_height,
                       uint32_t step,
                       uint32_t _threshold) {
-        scale = 0.0;
+        scale = 1.0;
         draw_state = eDrawSate_Start;
         threshold = _threshold;
         grid = new Grid(step, width, height, window_width, window_height);
-        grid->GenerateGrid();
+        // grid->GenerateGrid();
         start_point.x = 10;
     }
 
@@ -71,28 +75,43 @@ class Draw
         return ret;
     }
 
+    static void DrawLines (vector<Line2D> lines, Point2D _position) {
+        for(auto n : lines) {
+            p8g::strokeWeight(n.thickness);
+            p8g::line(n.a.x - _position.x, n.a.y - _position.y, n.b.x - _position.x, n.b.y - _position.y);
+        }
+    }
+
     static void DrawTask (void) {
         background(250);
-        grid->DrawGrid();
-        auto point = grid->FindPoint(mouseX, mouseY, threshold, position);
-        grid->UpdateGrid(position, (int32_t) scale);
-        p8g::strokeWeight(10.0);
+        p8g::resetMatrix();
+        auto point = grid->FindPoint(mouseX, mouseY, threshold, position, scale);
+        p8g::strokeWeight(6.0);
         p8g::stroke(0, 255, 0, 200);
         if(point) {
+            point.value().Print();
+            cout << endl;
+            // point.value().Print();
             p8g::point(point.value().x, point.value().y);
         }
-        p8g::strokeWeight(2.5);
+        p8g::scale(scale, scale);
+        p8g::applyMatrix(1.0, 0, 0, 1, -position.x, -position.y);
+        auto [grid_x, grid_y] = grid->GenerateGrid();
+        p8g::stroke(0, 0, 0, 120);
+        DrawLines(grid_x, Point2D{ 0, 0 });
+        DrawLines(grid_y, Point2D{ 0, 0 });
+
         p8g::stroke(0, 0, 0, 255);
-        for(auto n : lines) {
-            p8g::line(n.a.x - position.x, n.a.y - position.y, n.b.x - position.x, n.b.y - position.y);
-        }
+        DrawLines(lines, Point2D{ 0, 0 });
         switch(draw_state) {
             case eDrawSate_Idle:
                 break;
             case eDrawSate_Start:
                 break;
             case eDrawState_Proccess:
-                p8g::line(start_point.x - position.x, start_point.y - position.y, mouseX, mouseY);
+                p8g::strokeWeight(LINE_THICKNESS);
+                cout << "x = " << mouseX << " y = " << mouseY << endl;
+                p8g::line(start_point.x, start_point.y, (mouseX + position.x) / scale, (mouseY + position.y) / scale);
                 break;
         }
     };
@@ -109,7 +128,7 @@ class Draw
     };
 
     static void KeyReleased () {
-        cout << "key = " << keyCode << endl;
+        // cout << "key = " << keyCode << " scale = " << scale << endl;
         if(CTRL_KEY == keyCode) {
             is_ctrl_pressed = false;
         }
@@ -123,35 +142,42 @@ class Draw
         if(RIGHT_ARROW_KEY == keyCode) {
             position.x = CheckBoundaries(position.x, -1);
             position.y = CheckBoundaries(position.y, 0);
-            grid->UpdateGrid(position);
+            // grid->UpdateGrid(position);
         }
         if(LEFT_ARROW_KEY == keyCode) {
             position.x = CheckBoundaries(position.x, 1);
             position.y = CheckBoundaries(position.y, 0);
-            grid->UpdateGrid(position);
+            // grid->UpdateGrid(position);
         }
         if(UP_ARROW_KEY == keyCode) {
             position.x = CheckBoundaries(position.x, 0);
             position.y = CheckBoundaries(position.y, 1);
-            grid->UpdateGrid(position);
+            // grid->UpdateGrid(position);
         }
         if(DOWN_ARROW_KEY == keyCode) {
             position.x = CheckBoundaries(position.x, 0);
             position.y = CheckBoundaries(position.y, -1);
-            grid->UpdateGrid(position);
+            // grid->UpdateGrid(position);
+        }
+        if(PLUS_KEY == keyCode) {
+            scale += 0.1;
+            // grid->UpdateGrid(position);
+        }
+        if(MINUS_KEY == keyCode) {
+            scale -= 0.1;
+            // grid->UpdateGrid(position);
         }
     };
 
     static void MouseReleased () {
         if(LEFT_BUTTON == mouseButton) {
-            auto point = grid->FindPoint(mouseX, mouseY, threshold, position);
+            auto point = grid->FindPoint(mouseX, mouseY, threshold, position, scale);
             switch(draw_state) {
                 case eDrawSate_Idle:
                     draw_state = eDrawSate_Start;
                 case eDrawSate_Start:
                     if(point) {
-                        start_point.x = point.value().x + position.x;
-                        start_point.y = point.value().y + position.y;
+                        start_point = point.value() + position;
                     } else {
                         start_point.x = mouseX + position.x;
                         start_point.y = mouseY + position.y;
@@ -160,13 +186,12 @@ class Draw
                     break;
                 case eDrawState_Proccess:
                     if(point) {
-                        end_point.x = point.value().x + position.x;
-                        end_point.y = point.value().y + position.y;
+                        end_point = point.value() + position;
                     } else {
                         end_point.x = mouseX + position.x;
                         end_point.y = mouseY + position.y;
                     }
-                    lines.push_back(Line2D{ start_point.x, start_point.y, end_point.x, end_point.y });
+                    lines.push_back(Line2D{ start_point.x, start_point.y, end_point.x, end_point.y, LINE_THICKNESS });
                     draw_state = eDrawSate_Idle;
                     break;
             }
@@ -194,9 +219,9 @@ class Draw
             is_right_button_pressed = true;
         }
     };
-    static void MouseWheel (float delta) {
-        scale = round((scale + delta));
-        cout << "scale = " << scale << " key = " << mouseButton << endl;
+    static void MouseWheel (float delta){
+        // scale = scale + delta;
+        // cout << "scale = " << scale << " key = " << mouseButton << endl;
     };
 };
 

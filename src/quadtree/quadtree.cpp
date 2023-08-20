@@ -19,7 +19,7 @@ Point2D &Point2D::operator=(const Point2D &other) {
     return *this;
 }
 
-Point2D Point2D::operator/(const uint32_t other) {
+Point2D Point2D::operator/(const float other) {
     Point2D tmp;
     tmp.x = x / other;
     tmp.y = y / other;
@@ -33,7 +33,14 @@ Point2D Point2D::operator-(const Point2D &other) {
     return tmp;
 }
 
-Point2D &Point2D::operator/=(const uint32_t other) {
+Point2D Point2D::operator+(const Point2D &other) {
+    Point2D tmp;
+    tmp.x = x + other.x;
+    tmp.y = y + other.y;
+    return tmp;
+}
+
+Point2D &Point2D::operator/=(const float other) {
     x /= other;
     y /= other;
     return *this;
@@ -47,6 +54,10 @@ QuadTree::QuadTree() {
     left_top = Point2D{ 0, 0 };
     right_bottom = Point2D{ 0, 0 };
 };
+
+void Point2D::Print(void) {
+    cout << "(" << x << ", " << y << ")";
+}
 
 QuadTree::QuadTree(Point2D left_top, Point2D size) {
     this->left_top = left_top;
