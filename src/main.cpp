@@ -3,6 +3,7 @@
 #include "p8g.hpp"
 #include "quadtree.hpp"
 #include "grid.hpp"
+#include <cmath>
 
 using namespace p8g;
 using std::cout;
@@ -31,6 +32,7 @@ class Draw
     static vector<Line2D> lines;
     static Point2D position;
     static Point2D mouse;
+    static float scale;
     static bool is_right_button_pressed;
     static bool is_ctrl_pressed;
     static const int LEFT_BUTTON = 0;
@@ -49,6 +51,7 @@ class Draw
                       uint32_t window_height,
                       uint32_t step,
                       uint32_t _threshold) {
+        scale = 0.0;
         draw_state = eDrawSate_Start;
         threshold = _threshold;
         grid = new Grid(step, width, height, window_width, window_height);
@@ -56,18 +59,6 @@ class Draw
         start_point.x = 10;
     }
 
-    // static bool CheckBoundaries (int32_t &val, int32_t delta) {
-    //     bool ret = false;
-    //     if(val - delta < 0) {
-    //         val = 0;
-    //     } else if((val - delta >= 0) && (val - delta) <= (grid->size_x - grid->window_width)) {
-    //         val = val - delta;
-    //         ret = true;
-    //     } else {
-    //         val = grid->size_x - grid->window_width;
-    //     }
-    //     return ret;
-    // }
     static int32_t CheckBoundaries (int32_t val, int32_t delta) {
         int32_t ret = 0;
         if(val - delta < 0) {
@@ -84,6 +75,7 @@ class Draw
         background(250);
         grid->DrawGrid();
         auto point = grid->FindPoint(mouseX, mouseY, threshold, position);
+        grid->UpdateGrid(position, (int32_t) scale);
         p8g::strokeWeight(10.0);
         p8g::stroke(0, 255, 0, 200);
         if(point) {
@@ -191,7 +183,6 @@ class Draw
             int32_t delta_y = mouse.y - mouseY;
             position.x = CheckBoundaries(position.x, -delta_x);
             position.y = CheckBoundaries(position.y, -delta_y);
-            grid->UpdateGrid(position);
             mouse.x = mouseX;
             mouse.y = mouseY;
         }
@@ -203,7 +194,10 @@ class Draw
             is_right_button_pressed = true;
         }
     };
-    static void MouseWheel (float delta){};
+    static void MouseWheel (float delta) {
+        scale = round((scale + delta));
+        cout << "scale = " << scale << " key = " << mouseButton << endl;
+    };
 };
 
 Grid *Draw::grid;
@@ -216,6 +210,7 @@ vector<Line2D> Draw::lines;
 bool Draw::is_ctrl_pressed;
 bool Draw::is_right_button_pressed;
 Point2D Draw::mouse;
+float Draw::scale;
 
 int main () {
     Draw::Init(WINDOW_WIDTH * 2, WINDOW_HEIGHT * 2, WINDOW_WIDTH, WINDOW_HEIGHT, GRID_STEP, GRID_THRESHOLD);

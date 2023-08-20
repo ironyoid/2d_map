@@ -43,7 +43,6 @@ void Grid::GenerateGrid(void) {
     }
 }
 
-// void Grid::UpdateGrid(int32_t delta_x, int32_t delta_y, bool update_x, bool update_y) {
 void Grid::UpdateGrid(Point2D new_position) {
     Point2D delta = new_position - last_position;
     for(auto &n : grid_x) {
