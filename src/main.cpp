@@ -90,17 +90,6 @@ class Draw
         }
     }
 
-    /*   static void DrawGrid (vector<Line2D> gird) {
-        for(auto n : lines) {
-            if(((n.a.x) > window_width && (n.a.y) > window_height)
-               && ((n.b.x) > window_width && (n.b.y) > window_height)) {
-                break;
-            }
-            p8g::strokeWeight(n.thickness);
-            p8g::line(n.a.x, n.a.y, n.b.x, n.b.y);
-        }
-    } */
-
     static void DrawTask (void) {
         background(250);
         auto point = grid->FindPoint(mouseX, mouseY, threshold * scale, position, scale);
@@ -109,9 +98,6 @@ class Draw
         p8g::applyMatrix(1.0, 0, 0, 1, -position.x, -position.y);
         p8g::scale(scale, scale);
         if(point) {
-            /* point.value().Print(); */
-            /* cout << endl; */
-            // point.value().Print();
             p8g::point(point.value().x, point.value().y);
         }
         auto [grid_x, grid_y] = grid->GenerateGrid();
@@ -130,9 +116,6 @@ class Draw
             p8g::strokeWeight(n.thickness);
             p8g::line(n.a.x, n.a.y, n.b.x, n.b.y);
         }
-
-        /* DrawGrid(grid_x);
-        DrawGrid(grid_y); */
 
         p8g::stroke(0, 0, 0, 255);
         DrawLines(lines, Point2D{ 0, 0 });
