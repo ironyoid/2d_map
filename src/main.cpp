@@ -67,8 +67,17 @@ class Draw
         draw_state = eDrawSate_Start;
         threshold = _threshold;
         grid = new Grid(step, width, height, _window_width, _window_height);
-        // grid->GenerateGrid();
+        grid->GenerateGrid();
         start_point.x = 10;
+    }
+
+    static void UpdateScale (float new_scale) {
+        if(scale + new_scale >= 1.0) {
+            scale = scale + new_scale;
+        } else {
+            scale = 1;
+        }
+        cout << "scale = " << scale << endl;
     }
 
     static int32_t CheckBoundaries (int32_t val, int32_t delta) {
@@ -92,7 +101,7 @@ class Draw
 
     static void DrawTask (void) {
         background(250);
-        auto point = grid->FindPoint(mouseX, mouseY, threshold * scale, position, scale);
+        auto point = grid->FindPoint(mouseX, mouseY, threshold, position, scale);
         p8g::strokeWeight(10.0);
         p8g::stroke(0, 255, 0, 200);
         p8g::applyMatrix(1.0, 0, 0, 1, -position.x, -position.y);
@@ -100,22 +109,8 @@ class Draw
         if(point) {
             p8g::point(point.value().x, point.value().y);
         }
-        auto [grid_x, grid_y] = grid->GenerateGrid();
         p8g::stroke(0, 0, 0, 120);
-        for(auto n : grid_x) {
-            if(n.a.x > (window_width + position.x)) {
-                break;
-            }
-            p8g::strokeWeight(n.thickness);
-            p8g::line(n.a.x, n.a.y, n.b.x, n.b.y);
-        }
-        for(auto n : grid_y) {
-            if(n.a.y > (window_height + position.y)) {
-                break;
-            }
-            p8g::strokeWeight(n.thickness);
-            p8g::line(n.a.x, n.a.y, n.b.x, n.b.y);
-        }
+        grid->DrawGrid(position);
 
         p8g::stroke(0, 0, 0, 255);
         DrawLines(lines, Point2D{ 0, 0 });
@@ -144,7 +139,6 @@ class Draw
     };
 
     static void KeyReleased () {
-        // cout << "key = " << keyCode << " scale = " << scale << endl;
         if(CTRL_KEY == keyCode) {
             is_ctrl_pressed = false;
         }
@@ -158,40 +152,24 @@ class Draw
         if(RIGHT_ARROW_KEY == keyCode) {
             position.x = CheckBoundaries(position.x, -1);
             position.y = CheckBoundaries(position.y, 0);
-            // grid->UpdateGrid(position);
         }
         if(LEFT_ARROW_KEY == keyCode) {
             position.x = CheckBoundaries(position.x, 1);
             position.y = CheckBoundaries(position.y, 0);
-            // grid->UpdateGrid(position);
         }
         if(UP_ARROW_KEY == keyCode) {
             position.x = CheckBoundaries(position.x, 0);
             position.y = CheckBoundaries(position.y, 1);
-            // grid->UpdateGrid(position);
         }
         if(DOWN_ARROW_KEY == keyCode) {
             position.x = CheckBoundaries(position.x, 0);
             position.y = CheckBoundaries(position.y, -1);
-            // grid->UpdateGrid(position);
         }
         if(PLUS_KEY == keyCode) {
-            if(scale + 0.1 >= 1.0) {
-                scale = scale + 0.1;
-            } else {
-                scale = 1;
-            }
-            cout << scale << endl;
-            // grid->UpdateGrid(position);
+            UpdateScale(0.1);
         }
         if(MINUS_KEY == keyCode) {
-            if(scale - 0.1 >= 1.0) {
-                scale = scale - 0.1;
-            } else {
-                scale = 1;
-            }
-            cout << scale << endl;
-            // grid->UpdateGrid(position);
+            UpdateScale(-0.1);
         }
     };
 
@@ -224,7 +202,6 @@ class Draw
         }
         if(RIGHT_BUTTON == mouseButton) {
             is_right_button_pressed = false;
-            // draw_state = eDrawSate_Idle;
         }
     };
 
@@ -247,14 +224,8 @@ class Draw
     };
     static void MouseWheel (float delta) {
         if(true == is_ctrl_pressed) {
-            delta = delta / 10;
-            if(scale + delta >= 1.0) {
-                scale = scale + delta;
-            } else {
-                scale = 1;
-            }
+            UpdateScale(delta / 10);
         }
-        cout << "scale = " << scale << " delta = " << delta << endl;
     };
 };
 

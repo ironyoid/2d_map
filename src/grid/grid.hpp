@@ -15,6 +15,8 @@ struct Point2DDistance {
 class Grid
 {
     int32_t step;
+    std::vector<Line2D> grid_x;
+    std::vector<Line2D> grid_y;
 
    public:
     int32_t size_x;
@@ -23,8 +25,8 @@ class Grid
     uint32_t window_height;
     Point2D last_position;
     Grid(int32_t step, int32_t size_x, int32_t size_y, uint32_t window_width, uint32_t window_height);
-    std::pair<std::vector<Line2D>, std::vector<Line2D>> GenerateGrid (void);
-    // void DrawGrid (void);
+    void GenerateGrid (void);
+    void DrawGrid (Point2D position);
     // void UpdateGrid (Point2D new_position, int32_t scale);
     std::optional<Point2D> FindPoint (int32_t mouse_x,
                                       int32_t mouse_y,
