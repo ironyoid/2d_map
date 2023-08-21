@@ -50,6 +50,13 @@ bool Line2D::operator==(const Line2D &other) const {
     return (a == other.a && b == other.b);
 }
 
+Point2D Point2D::operator*(const float other) {
+    Point2D tmp;
+    tmp.x = x * other;
+    tmp.y = y * other;
+    return tmp;
+}
+
 QuadTree::QuadTree() {
     left_top = Point2D{ 0, 0 };
     right_bottom = Point2D{ 0, 0 };

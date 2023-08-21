@@ -13,6 +13,7 @@ struct Point2D {
     Point2D operator/(const float other);
     Point2D operator-(const Point2D &other);
     Point2D operator+(const Point2D &other);
+    Point2D operator*(const float other);
     void Print (void);
 };
 

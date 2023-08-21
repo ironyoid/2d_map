@@ -84,18 +84,17 @@ class Draw
 
     static void DrawTask (void) {
         background(250);
-        p8g::resetMatrix();
         auto point = grid->FindPoint(mouseX, mouseY, threshold, position, scale);
         p8g::strokeWeight(6.0);
         p8g::stroke(0, 255, 0, 200);
+        p8g::scale(scale, scale);
+        p8g::applyMatrix(1.0, 0, 0, 1, -position.x, -position.y);
         if(point) {
-            point.value().Print();
-            cout << endl;
+            /* point.value().Print(); */
+            /* cout << endl; */
             // point.value().Print();
             p8g::point(point.value().x, point.value().y);
         }
-        p8g::scale(scale, scale);
-        p8g::applyMatrix(1.0, 0, 0, 1, -position.x, -position.y);
         auto [grid_x, grid_y] = grid->GenerateGrid();
         p8g::stroke(0, 0, 0, 120);
         DrawLines(grid_x, Point2D{ 0, 0 });
@@ -110,8 +109,7 @@ class Draw
                 break;
             case eDrawState_Proccess:
                 p8g::strokeWeight(LINE_THICKNESS);
-                cout << "x = " << mouseX << " y = " << mouseY << endl;
-                p8g::line(start_point.x, start_point.y, (mouseX + position.x) / scale, (mouseY + position.y) / scale);
+                p8g::line(start_point.x, start_point.y, (mouseX / scale + position.x), (mouseY / scale + position.y));
                 break;
         }
     };
@@ -160,11 +158,11 @@ class Draw
             // grid->UpdateGrid(position);
         }
         if(PLUS_KEY == keyCode) {
-            scale += 0.1;
+            scale += 1;
             // grid->UpdateGrid(position);
         }
         if(MINUS_KEY == keyCode) {
-            scale -= 0.1;
+            scale -= 1;
             // grid->UpdateGrid(position);
         }
     };
@@ -177,19 +175,19 @@ class Draw
                     draw_state = eDrawSate_Start;
                 case eDrawSate_Start:
                     if(point) {
-                        start_point = point.value() + position;
+                        start_point = point.value();
                     } else {
-                        start_point.x = mouseX + position.x;
-                        start_point.y = mouseY + position.y;
+                        start_point.x = (mouseX / scale + position.x);
+                        start_point.y = (mouseY / scale + position.y);
                     }
                     draw_state = eDrawState_Proccess;
                     break;
                 case eDrawState_Proccess:
                     if(point) {
-                        end_point = point.value() + position;
+                        end_point = point.value();
                     } else {
-                        end_point.x = mouseX + position.x;
-                        end_point.y = mouseY + position.y;
+                        end_point.x = (mouseX / scale + position.x);
+                        end_point.y = (mouseY / scale + position.y);
                     }
                     lines.push_back(Line2D{ start_point.x, start_point.y, end_point.x, end_point.y, LINE_THICKNESS });
                     draw_state = eDrawSate_Idle;
@@ -219,9 +217,15 @@ class Draw
             is_right_button_pressed = true;
         }
     };
-    static void MouseWheel (float delta){
-        // scale = scale + delta;
-        // cout << "scale = " << scale << " key = " << mouseButton << endl;
+    static void MouseWheel (float delta) {
+        delta = delta / 10;
+        if(scale + delta >= 0.1) {
+            scale = scale + delta;
+        } else {
+            scale = 0.1;
+        }
+
+        cout << "scale = " << scale << " delta = " << delta << endl;
     };
 };
 

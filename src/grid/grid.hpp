@@ -1,5 +1,4 @@
 #pragma once
-#include <_types/_uint32_t.h>
 #include <iostream>
 #include <string>
 #include <stdint.h>
@@ -32,5 +31,5 @@ class Grid
                                       uint32_t threshold,
                                       Point2D position,
                                       float scale);
-    Point2DDistance Distance (Point2D point, int32_t mouse_x, int32_t mouse_y);
+    Point2DDistance Distance (Point2D point, int32_t mouse_x, int32_t mouse_y, Point2D org);
 };
