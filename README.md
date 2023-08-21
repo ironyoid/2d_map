@@ -1,2 +1,2 @@
-# 2d_engine
-Simple 2d engine for future LiDAR simulation
+# 2d_map
+Simple editor to create 2D maps
