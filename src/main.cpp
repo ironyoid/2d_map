@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
 #include "p8g.hpp"
-#include "quadtree.hpp"
+#include "parser.hpp"
+#include "points.hpp"
 #include "grid.hpp"
 #include <cmath>
 
@@ -25,6 +26,7 @@ class Draw
 {
    public:
     static Grid *grid;
+    static Parser *parser;
     static Point2D start_point;
     static Point2D end_point;
     static uint32_t threshold;
@@ -66,6 +68,7 @@ class Draw
         scale = 1.0;
         draw_state = eDrawSate_Start;
         threshold = _threshold;
+        parser = new Parser("outlines.txt");
         grid = new Grid(step, width, height, _window_width, _window_height);
         grid->GenerateGrid();
         start_point.x = 10;
@@ -148,6 +151,7 @@ class Draw
                      << " "
                      << "(" << n.b.x << ", " << n.b.y << ")" << endl;
             }
+            parser->WriteLines(lines, Point2D{ width, height });
         }
         if(RIGHT_ARROW_KEY == keyCode) {
             position.x = CheckBoundaries(position.x, -1);
@@ -230,6 +234,7 @@ class Draw
 };
 
 Grid *Draw::grid;
+Parser *Draw::parser;
 Point2D Draw::start_point;
 Point2D Draw::end_point;
 Point2D Draw::position;

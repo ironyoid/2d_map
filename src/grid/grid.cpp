@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 #include "p8g.hpp"
-#include "quadtree.hpp"
+#include "points.hpp"
 #include <cmath>
 using namespace p8g;
 using std::cout;

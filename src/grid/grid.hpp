@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <stdint.h>
-#include "quadtree.hpp"
+#include "points.hpp"
 #include <optional>
 #include <sys/types.h>
 #include <vector>
