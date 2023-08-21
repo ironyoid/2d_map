@@ -88,7 +88,7 @@ std::optional<Point2D> Grid::FindPoint(int32_t mouse_x,
                                        Point2D position,
                                        float scale) {
     int32_t step_tmp = static_cast<int32_t>(step * scale);
-    /*  cout << "step = " << step_tmp << endl; */
+    /* cout << "step = " << step_tmp << endl; */
     Point2DDistance ret{ 0, 0, step_tmp };
     int32_t mouse_x_tmp = ((mouse_x + position.x) / step_tmp);
     int32_t mouse_y_tmp = ((mouse_y + position.y) / step_tmp);
@@ -104,7 +104,8 @@ std::optional<Point2D> Grid::FindPoint(int32_t mouse_x,
     left_bottom.Print();
     cout << " ";
     right_bottom.Print();
-    cout << " "; */
+    cout << " " << endl; */
+
     /* cout << " " << mouse_x_tmp << " " << step_tmp << " " << (position.x % step_tmp) << " "; */
 
     Point2D left_top_org{ ((mouse_x_tmp) *step), ((mouse_y_tmp) *step) };
@@ -112,6 +113,8 @@ std::optional<Point2D> Grid::FindPoint(int32_t mouse_x,
     Point2D left_bottom_org{ left_top_org.x, left_top_org.y + step };
     Point2D right_bottom_org{ right_top_org.x, left_top_org.y + step };
 
+    /*     cout << mouse_x + (position.x) << " " << mouse_y + (position.y) << endl;
+    cout << (position.x) << " " << (position.y) << endl; */
     std::vector<Point2DDistance> vec;
     vec.push_back(Distance(left_top, mouse_x + (position.x), mouse_y + (position.y), left_top_org));
     vec.push_back(Distance(right_top, mouse_x + (position.x), mouse_y + (position.y), right_top_org));
@@ -125,8 +128,8 @@ std::optional<Point2D> Grid::FindPoint(int32_t mouse_x,
         }
     }
     /*     ret.a.Print();
-    cout << " "; */
-
+    cout << endl;
+    cout << endl; */
     if(ret.distance < threshold) {
         return Point2D{ ret.a.x, ret.a.y };
     } else {
@@ -140,7 +143,7 @@ std::optional<Point2D> Grid::FindPoint(int32_t mouse_x,
                                        Point2D position,
                                        float scale) {
 
-    int32_t step_tmp = round(static_cast<float>(step) * scale);
+    int32_t step_tmp = round(static_cast<float>(step) );
 
     Point2D left_top{ ((mouse_x / step_tmp) * step_tmp) - ((int32_t) position.x) % step_tmp,
                       ((mouse_y / step_tmp) * step_tmp) - ((int32_t) position.y) % step_tmp };

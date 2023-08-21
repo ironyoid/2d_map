@@ -10,8 +10,8 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-#define WINDOW_WIDTH   (500U)
-#define WINDOW_HEIGHT  (500U)
+#define WINDOW_WIDTH   (1000U)
+#define WINDOW_HEIGHT  (1000U)
 #define GRID_STEP      (20U)
 #define GRID_THRESHOLD (20U)
 
@@ -28,6 +28,8 @@ class Draw
     static Point2D start_point;
     static Point2D end_point;
     static uint32_t threshold;
+    static uint32_t window_width;
+    static uint32_t window_height;
     static eDrawStete_t draw_state;
     static vector<Line2D> lines;
     static Point2D position;
@@ -39,7 +41,11 @@ class Draw
 
     static const int LEFT_BUTTON = 0;
     static const int RIGHT_BUTTON = 1;
+#ifdef WINDOWS_BUILD
+    static const int CTRL_KEY = 341;
+#else
     static const int CTRL_KEY = 343;
+#endif
     static const int Z_KEY = 90;
     static const int RIGHT_ARROW_KEY = 262;
     static const int LEFT_ARROW_KEY = 263;
@@ -51,14 +57,16 @@ class Draw
 
     static void Init (uint32_t width,
                       uint32_t height,
-                      uint32_t window_width,
-                      uint32_t window_height,
+                      uint32_t _window_width,
+                      uint32_t _window_height,
                       uint32_t step,
                       uint32_t _threshold) {
+        window_width = _window_width;
+        window_height = _window_height;
         scale = 1.0;
         draw_state = eDrawSate_Start;
         threshold = _threshold;
-        grid = new Grid(step, width, height, window_width, window_height);
+        grid = new Grid(step, width, height, _window_width, _window_height);
         // grid->GenerateGrid();
         start_point.x = 10;
     }
@@ -82,13 +90,24 @@ class Draw
         }
     }
 
+    /*   static void DrawGrid (vector<Line2D> gird) {
+        for(auto n : lines) {
+            if(((n.a.x) > window_width && (n.a.y) > window_height)
+               && ((n.b.x) > window_width && (n.b.y) > window_height)) {
+                break;
+            }
+            p8g::strokeWeight(n.thickness);
+            p8g::line(n.a.x, n.a.y, n.b.x, n.b.y);
+        }
+    } */
+
     static void DrawTask (void) {
         background(250);
-        auto point = grid->FindPoint(mouseX, mouseY, threshold, position, scale);
-        p8g::strokeWeight(6.0);
+        auto point = grid->FindPoint(mouseX, mouseY, threshold * scale, position, scale);
+        p8g::strokeWeight(10.0);
         p8g::stroke(0, 255, 0, 200);
-        p8g::scale(scale, scale);
         p8g::applyMatrix(1.0, 0, 0, 1, -position.x, -position.y);
+        p8g::scale(scale, scale);
         if(point) {
             /* point.value().Print(); */
             /* cout << endl; */
@@ -97,8 +116,23 @@ class Draw
         }
         auto [grid_x, grid_y] = grid->GenerateGrid();
         p8g::stroke(0, 0, 0, 120);
-        DrawLines(grid_x, Point2D{ 0, 0 });
-        DrawLines(grid_y, Point2D{ 0, 0 });
+        for(auto n : grid_x) {
+            if(n.a.x > (window_width + position.x)) {
+                break;
+            }
+            p8g::strokeWeight(n.thickness);
+            p8g::line(n.a.x, n.a.y, n.b.x, n.b.y);
+        }
+        for(auto n : grid_y) {
+            if(n.a.y > (window_height + position.y)) {
+                break;
+            }
+            p8g::strokeWeight(n.thickness);
+            p8g::line(n.a.x, n.a.y, n.b.x, n.b.y);
+        }
+
+        /* DrawGrid(grid_x);
+        DrawGrid(grid_y); */
 
         p8g::stroke(0, 0, 0, 255);
         DrawLines(lines, Point2D{ 0, 0 });
@@ -109,12 +143,13 @@ class Draw
                 break;
             case eDrawState_Proccess:
                 p8g::strokeWeight(LINE_THICKNESS);
-                p8g::line(start_point.x, start_point.y, (mouseX / scale + position.x), (mouseY / scale + position.y));
+                p8g::line(start_point.x, start_point.y, (mouseX + position.x) / scale, (mouseY + position.y) / scale);
                 break;
         }
     };
 
     static void KeyPressed () {
+        cout << "key = " << keyCode << endl;
         if(CTRL_KEY == keyCode) {
             is_ctrl_pressed = true;
         }
@@ -158,11 +193,21 @@ class Draw
             // grid->UpdateGrid(position);
         }
         if(PLUS_KEY == keyCode) {
-            scale += 1;
+            if(scale + 0.1 >= 1.0) {
+                scale = scale + 0.1;
+            } else {
+                scale = 1;
+            }
+            cout << scale << endl;
             // grid->UpdateGrid(position);
         }
         if(MINUS_KEY == keyCode) {
-            scale -= 1;
+            if(scale - 0.1 >= 1.0) {
+                scale = scale - 0.1;
+            } else {
+                scale = 1;
+            }
+            cout << scale << endl;
             // grid->UpdateGrid(position);
         }
     };
@@ -177,8 +222,8 @@ class Draw
                     if(point) {
                         start_point = point.value();
                     } else {
-                        start_point.x = (mouseX / scale + position.x);
-                        start_point.y = (mouseY / scale + position.y);
+                        start_point.x = (mouseX + position.x) / scale;
+                        start_point.y = (mouseY + position.y) / scale;
                     }
                     draw_state = eDrawState_Proccess;
                     break;
@@ -186,8 +231,8 @@ class Draw
                     if(point) {
                         end_point = point.value();
                     } else {
-                        end_point.x = (mouseX / scale + position.x);
-                        end_point.y = (mouseY / scale + position.y);
+                        end_point.x = (mouseX + position.x) / scale;
+                        end_point.y = (mouseY + position.y) / scale;
                     }
                     lines.push_back(Line2D{ start_point.x, start_point.y, end_point.x, end_point.y, LINE_THICKNESS });
                     draw_state = eDrawSate_Idle;
@@ -218,13 +263,14 @@ class Draw
         }
     };
     static void MouseWheel (float delta) {
-        delta = delta / 10;
-        if(scale + delta >= 0.1) {
-            scale = scale + delta;
-        } else {
-            scale = 0.1;
+        if(true == is_ctrl_pressed) {
+            delta = delta / 10;
+            if(scale + delta >= 1.0) {
+                scale = scale + delta;
+            } else {
+                scale = 1;
+            }
         }
-
         cout << "scale = " << scale << " delta = " << delta << endl;
     };
 };
@@ -240,6 +286,8 @@ bool Draw::is_ctrl_pressed;
 bool Draw::is_right_button_pressed;
 Point2D Draw::mouse;
 float Draw::scale;
+uint32_t Draw::window_width;
+uint32_t Draw::window_height;
 
 int main () {
     Draw::Init(WINDOW_WIDTH * 2, WINDOW_HEIGHT * 2, WINDOW_WIDTH, WINDOW_HEIGHT, GRID_STEP, GRID_THRESHOLD);
