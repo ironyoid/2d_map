@@ -22,6 +22,27 @@ typedef enum {
     eDrawState_Proccess = 2,
 } eDrawStete_t;
 
+typedef enum {
+    eLeft_Button = 0,
+    eRight_Button = 1,
+} eMouseButtons_t;
+
+typedef enum {
+#ifdef WINDOWS_BUILD
+    eCtrl_Key = 341,
+#else
+    eCtrlKey = 343,
+#endif
+    eZ_Key = 90,
+    eRightArrow_Key = 262,
+    eLeftArrow_Key = 263,
+    eUpArrow_Key = 265,
+    eDownArrow_Key = 264,
+    eP_Key = 80,
+    ePlus_Key = 61,
+    eMinus_key = 45,
+} eKeyboardKeys_t;
+
 class Draw
 {
    public:
@@ -41,34 +62,19 @@ class Draw
     static bool is_ctrl_pressed;
     constexpr static float LINE_THICKNESS = 4.0;
 
-    static const int LEFT_BUTTON = 0;
-    static const int RIGHT_BUTTON = 1;
-#ifdef WINDOWS_BUILD
-    static const int CTRL_KEY = 341;
-#else
-    static const int CTRL_KEY = 343;
-#endif
-    static const int Z_KEY = 90;
-    static const int RIGHT_ARROW_KEY = 262;
-    static const int LEFT_ARROW_KEY = 263;
-    static const int UP_ARROW_KEY = 265;
-    static const int DOWN_ARROW_KEY = 264;
-    static const int P_KEY = 80;
-    static const int PLUS_KEY = 61;
-    static const int MINUS_KEY = 45;
-
     static void Init (uint32_t width,
                       uint32_t height,
                       uint32_t _window_width,
                       uint32_t _window_height,
                       uint32_t step,
-                      uint32_t _threshold) {
+                      uint32_t _threshold,
+                      std::string path) {
         window_width = _window_width;
         window_height = _window_height;
         scale = 1.0;
         draw_state = eDrawSate_Start;
         threshold = _threshold;
-        parser = new Parser("outlines.txt");
+        parser = new Parser(path);
         grid = new Grid(step, width, height, _window_width, _window_height);
         grid->GenerateGrid();
         start_point.x = 10;
@@ -131,10 +137,10 @@ class Draw
 
     static void KeyPressed () {
         cout << "key = " << keyCode << endl;
-        if(CTRL_KEY == keyCode) {
+        if(eCtrl_Key == keyCode) {
             is_ctrl_pressed = true;
         }
-        if((Z_KEY == keyCode) && (true == is_ctrl_pressed)) {
+        if((eZ_Key == keyCode) && (true == is_ctrl_pressed)) {
             if(!lines.empty()) {
                 lines.pop_back();
             }
@@ -142,10 +148,10 @@ class Draw
     };
 
     static void KeyReleased () {
-        if(CTRL_KEY == keyCode) {
+        if(eCtrl_Key == keyCode) {
             is_ctrl_pressed = false;
         }
-        if(P_KEY == keyCode) {
+        if(eP_Key == keyCode) {
             for(auto n : lines) {
                 cout << "(" << n.a.x << ", " << n.a.y << ")"
                      << " "
@@ -153,32 +159,32 @@ class Draw
             }
             parser->WriteLines(lines, Point2D{ width, height });
         }
-        if(RIGHT_ARROW_KEY == keyCode) {
+        if(eRightArrow_Key == keyCode) {
             position.x = CheckBoundaries(position.x, -1);
             position.y = CheckBoundaries(position.y, 0);
         }
-        if(LEFT_ARROW_KEY == keyCode) {
+        if(eLeftArrow_Key == keyCode) {
             position.x = CheckBoundaries(position.x, 1);
             position.y = CheckBoundaries(position.y, 0);
         }
-        if(UP_ARROW_KEY == keyCode) {
+        if(eUpArrow_Key == keyCode) {
             position.x = CheckBoundaries(position.x, 0);
             position.y = CheckBoundaries(position.y, 1);
         }
-        if(DOWN_ARROW_KEY == keyCode) {
+        if(eDownArrow_Key == keyCode) {
             position.x = CheckBoundaries(position.x, 0);
             position.y = CheckBoundaries(position.y, -1);
         }
-        if(PLUS_KEY == keyCode) {
+        if(ePlus_Key == keyCode) {
             UpdateScale(0.1);
         }
-        if(MINUS_KEY == keyCode) {
+        if(eMinus_key == keyCode) {
             UpdateScale(-0.1);
         }
     };
 
     static void MouseReleased () {
-        if(LEFT_BUTTON == mouseButton) {
+        if(eLeft_Button == mouseButton) {
             auto point = grid->FindPoint(mouseX, mouseY, threshold, position, scale);
             switch(draw_state) {
                 case eDrawSate_Idle:
@@ -204,7 +210,7 @@ class Draw
                     break;
             }
         }
-        if(RIGHT_BUTTON == mouseButton) {
+        if(eRight_Button == mouseButton) {
             is_right_button_pressed = false;
         }
     };
@@ -220,7 +226,7 @@ class Draw
         }
     };
     static void MousePressed () {
-        if(RIGHT_BUTTON == mouseButton) {
+        if(eRight_Button == mouseButton) {
             mouse.x = mouseX;
             mouse.y = mouseY;
             is_right_button_pressed = true;
@@ -249,7 +255,13 @@ uint32_t Draw::window_width;
 uint32_t Draw::window_height;
 
 int main () {
-    Draw::Init(WINDOW_WIDTH * 2, WINDOW_HEIGHT * 2, WINDOW_WIDTH, WINDOW_HEIGHT, GRID_STEP, GRID_THRESHOLD);
+    Draw::Init(WINDOW_WIDTH * 2,
+               WINDOW_HEIGHT * 2,
+               WINDOW_WIDTH,
+               WINDOW_HEIGHT,
+               GRID_STEP,
+               GRID_THRESHOLD,
+               "outlines.txt");
     Draw test{};
     RunArgs run_args{ WINDOW_WIDTH, WINDOW_HEIGHT, "2d_engine", false };
     p8g::_run(run_args,
