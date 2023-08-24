@@ -39,6 +39,7 @@ typedef enum {
     eUpArrow_Key = 265,
     eDownArrow_Key = 264,
     eP_Key = 80,
+    eR_Key = 82,
     ePlus_Key = 61,
     eMinus_key = 45,
 } eKeyboardKeys_t;
@@ -148,6 +149,7 @@ class Draw
     };
 
     static void KeyReleased () {
+        cout << "key = " << keyCode << endl;
         if(eCtrl_Key == keyCode) {
             is_ctrl_pressed = false;
         }
@@ -159,6 +161,14 @@ class Draw
             }
             parser->WriteLines(lines, Point2D{ width, height });
         }
+
+        if(eR_Key == keyCode) {
+            auto lines = parser->ReadLines(window_width, window_height);
+            for(auto n : lines) {
+                cout << n.ToString() << endl;
+            }
+        }
+
         if(eRightArrow_Key == keyCode) {
             position.x = CheckBoundaries(position.x, -1);
             position.y = CheckBoundaries(position.y, 0);

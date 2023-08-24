@@ -73,8 +73,8 @@ struct Line2D {
         float bx = static_cast<float>(b.x) / position.x;
         float ay = static_cast<float>(a.y) / position.y;
         float by = static_cast<float>(b.y) / position.y;
-        string tmp = "(" + std::to_string(ax) + ", " + std::to_string(ay) + ");";
-        tmp += "(" + std::to_string(bx) + ", " + std::to_string(by) + ")";
+        string tmp = std::to_string(ax) + "," + std::to_string(ay) + ";";
+        tmp += std::to_string(bx) + "," + std::to_string(by);
         return tmp;
     };
 };
