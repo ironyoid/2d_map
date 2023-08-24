@@ -31,7 +31,7 @@ typedef enum {
 #ifdef WINDOWS_BUILD
     eCtrl_Key = 341,
 #else
-    eCtrlKey = 343,
+    eCtrl_Key = 343,
 #endif
     eZ_Key = 90,
     eRightArrow_Key = 262,
