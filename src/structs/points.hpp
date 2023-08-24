@@ -55,6 +55,13 @@ struct Point2D {
         string tmp = "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
         return tmp;
     };
+
+    string ToStringNormalized (Point2D position) {
+        float ax = static_cast<float>(x) / position.x;
+        float ay = static_cast<float>(y) / position.y;
+        string tmp = std::to_string(ax) + "," + std::to_string(ay);
+        return tmp;
+    };
 };
 
 struct Line2D {

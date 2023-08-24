@@ -58,6 +58,7 @@ class Draw
     static vector<Line2D> lines;
     static Point2D position;
     static Point2D mouse;
+    static Point2D robot_point;
     static float scale;
     static bool is_right_button_pressed;
     static bool is_ctrl_pressed;
@@ -72,6 +73,8 @@ class Draw
                       std::string path) {
         window_width = _window_width;
         window_height = _window_height;
+        robot_point.x = 0;
+        robot_point.y = 0;
         scale = 1.0;
         draw_state = eDrawSate_Start;
         threshold = _threshold;
@@ -122,8 +125,13 @@ class Draw
         p8g::stroke(0, 0, 0, 120);
         grid->DrawGrid(position);
 
+        p8g::stroke(255, 0, 0, 255);
+        p8g::strokeWeight(20.0);
+        p8g::point(robot_point.x, robot_point.y);
+
         p8g::stroke(0, 0, 0, 255);
         DrawLines(lines, Point2D{ 0, 0 });
+
         switch(draw_state) {
             case eDrawSate_Idle:
                 break;
@@ -159,7 +167,7 @@ class Draw
                      << " "
                      << "(" << n.b.x << ", " << n.b.y << ")" << endl;
             }
-            parser->WriteLines(lines, Point2D{ width, height });
+            parser->WriteLines(lines, robot_point, Point2D{ width, height });
         }
 
         if(eR_Key == keyCode) {
@@ -194,8 +202,8 @@ class Draw
     };
 
     static void MouseReleased () {
-        if(eLeft_Button == mouseButton) {
-            auto point = grid->FindPoint(mouseX, mouseY, threshold, position, scale);
+        auto point = grid->FindPoint(mouseX, mouseY, threshold, position, scale);
+        if((eLeft_Button == mouseButton) && (false == is_ctrl_pressed)) {
             switch(draw_state) {
                 case eDrawSate_Idle:
                     draw_state = eDrawSate_Start;
@@ -219,7 +227,15 @@ class Draw
                     draw_state = eDrawSate_Idle;
                     break;
             }
+        } else if((eLeft_Button == mouseButton) && (true == is_ctrl_pressed)) {
+            if(point) {
+                robot_point = point.value();
+            } else {
+                robot_point.x = (mouseX + position.x) / scale;
+                robot_point.y = (mouseY + position.y) / scale;
+            }
         }
+
         if(eRight_Button == mouseButton) {
             is_right_button_pressed = false;
         }
@@ -263,6 +279,7 @@ Point2D Draw::mouse;
 float Draw::scale;
 uint32_t Draw::window_width;
 uint32_t Draw::window_height;
+Point2D Draw::robot_point;
 
 int main () {
     Draw::Init(WINDOW_WIDTH * 2,
