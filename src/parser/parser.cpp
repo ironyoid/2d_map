@@ -67,8 +67,8 @@ std::vector<Line2D> Parser::ReadLines(uint32_t width, uint32_t height) {
 void Parser::WriteLines(std::vector<Line2D> lines, Point2D robot_point, Point2D position) {
     std::ofstream output(path.c_str(), std::ifstream::out | std::ofstream::trunc);
     for(auto n : lines) {
-        output << n.ToStringNormalized(position) << std::endl;
+        output << n.ToString() << std::endl;
     }
-    output << robot_point.ToStringNormalized(position);
+    output << robot_point.ToString();
     output.close();
 }

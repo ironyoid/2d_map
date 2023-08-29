@@ -52,7 +52,7 @@ struct Point2D {
         return tmp;
     }
     string ToString (void) {
-        string tmp = "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+        string tmp = std::to_string(x) + "," + std::to_string(y);
         return tmp;
     };
 
